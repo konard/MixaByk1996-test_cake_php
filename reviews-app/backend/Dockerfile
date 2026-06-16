@@ -18,15 +18,13 @@ WORKDIR /var/www
 
 COPY composer.json composer.lock* ./
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 COPY . .
 
-RUN cp .env.example .env || true
-
-RUN php artisan key:generate --force || true \
-    && mkdir -p storage/framework/{cache,sessions,views} storage/logs \
-    && chmod -R 775 storage bootstrap/cache \
+RUN cp .env.example .env || true \
+    && mkdir -p bootstrap/cache storage/framework/{cache,sessions,views} storage/logs \
+    && chmod -R 775 bootstrap/cache storage \
     && chown -R www-data:www-data storage bootstrap/cache
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
