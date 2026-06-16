@@ -19,8 +19,10 @@ class StoreOrganizationRequest extends FormRequest
                 'string',
                 'url',
                 function (string $attribute, mixed $value, \Closure $fail) {
-                    if (!preg_match('#^https?://(yandex\.ru|maps\.yandex\.ru|yandex\.com)/maps/.*org/\d+#', $value)) {
-                        $fail('The URL must be a valid Yandex Maps organization link.');
+                    $hasOrgPath   = preg_match('#^https?://(yandex\.ru|maps\.yandex\.ru|yandex\.com)/maps/.*org/[^/?#]*/?\d+#', $value);
+                    $hasBusinessId = preg_match('#[?&]businessId=\d+#', $value);
+                    if (!$hasOrgPath && !$hasBusinessId) {
+                        $fail('The URL must be a valid Yandex Maps organization link (e.g. https://yandex.ru/maps/org/name/123456789/).');
                     }
                 },
             ],
